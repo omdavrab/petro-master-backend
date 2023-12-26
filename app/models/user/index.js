@@ -24,11 +24,6 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please Provide Password"],
     minLength: 6,
   },
-  role: {
-    type: String,
-    enum: ["restaurant", "admin", "user"],
-    default: "user",
-  },
   image: {
     type: String,
   },

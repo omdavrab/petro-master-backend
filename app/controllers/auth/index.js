@@ -36,7 +36,7 @@ const register = async (req, res) => {
     });
     const user = await User.create({ name, email, password, role });
     const token = jwtToken.sign(
-      { email: user.email, id: user._id, role: user.role },
+      { email: user.email, id: user._id },
       process.env.JWT_SECRET,
       {
         expiresIn: process.env.JWT_LIFTIME,
@@ -73,10 +73,10 @@ const login = async (req, res) => {
         .json({ message: "Please provide email and password" });
     }
     const query = {
-      $and: [{ email: email }, { isverify: true }, { role: "restaurant" }],
+      $and: [{ email: email }, { isverify: true }],
     };
     const user = await User.findOne(query);
-    if (!user) {
+    if (!user) { 
       return res.status(400).send({ message: "Invalid credential" });
     }
     const isPasswordCorrect = await user.comparePassword(password);
@@ -90,8 +90,6 @@ const login = async (req, res) => {
         {
           email: email,
           id: user._id,
-          restaurantID: restaurant._id,
-          role: user.role,
         },
         process.env.JWT_SECRET,
         {
@@ -104,7 +102,7 @@ const login = async (req, res) => {
         .send({ user: user, token, message: "Login succefully" });
     } else {
       const token = jwtToken.sign(
-        { email: email, id: user._id, role: user.role },
+        { email: email, id: user._id },
         process.env.JWT_SECRET,
         {
           expiresIn: process.env.JWT_LIFTIME,
@@ -271,64 +269,6 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-// User Login
-const loginUser = async (req, res, next) => {
-  try {
-    const { email, password, restaurantID } = req.body;
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Please provide email and password" });
-    }
-    const query = {
-      $and: [{ email: email }, { role: "user" }],
-    };
-    const user = await User.findOne(query);
-
-    if (!user) {
-      const name = email.split("@")[0];
-      const user = await User.create({ name, email, password });
-      const token = jwtToken.sign(
-        {
-          email: email,
-          id: user._id,
-          role: user.role,
-          restaurantID: restaurantID,
-        },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: process.env.JWT_LIFTIME,
-        }
-      );
-      return res
-        .status(200)
-        .send({ user: user, token: token, message: "User created" });
-    }
-    const isPasswordCorrect = await user.comparePassword(password);
-    if (!isPasswordCorrect) {
-      return res.status(400).send({ message: "Invalid credential" });
-    }
-    const token = jwtToken.sign(
-      {
-        email: email,
-        id: user._id,
-        role: user.role,
-        restaurantID: restaurantID,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_LIFTIME,
-      }
-    );
-
-    return res
-      .status(200)
-      .send({ user: user, token, message: "Login succefully" });
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   register,
   login,
@@ -336,6 +276,5 @@ module.exports = {
   forgotPassword,
   verifyForgotPasswordOtp,
   updateForgotPassword,
-  loginUser,
   updateUser,
 };

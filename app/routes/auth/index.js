@@ -9,13 +9,11 @@ const {
   forgotPassword,
   verifyForgotPasswordOtp,
   updateForgotPassword,
-  loginUser,
   updateUser,
 } = require("../../controllers/auth");
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/loginUser", loginUser);
 router.post("/verify", verifyOtp);
 router.post("/forgotPassword", forgotPassword);
 router.post("/verifyForgotPassword", verifyForgotPasswordOtp);

@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
-const socketIO = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
@@ -23,9 +22,6 @@ const foodCategoryRoute = require("./app/routes/foodCategory");
 const QRCode = require("./app/routes/qrCode");
 const Banner = require("./app/routes/banner");
 const Tax = require("./app/routes/tax");
-
-
-const configureSocket = require("./config/socket");
 
 app.use(
   cors({
@@ -58,7 +54,6 @@ const start = async () => {
   try {
     mongoose.set("strictQuery", false);
     await connectDB();
-    configureSocket(server);
     server.listen(PORT, console.log(`Server is listening on port ${PORT}...`));
   } catch (error) {
     console.log(error);

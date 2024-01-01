@@ -14,14 +14,11 @@ const errorMiddleware = require("./middleware/errorHandler");
 require("express-async-errors");
 
 // Import Router
-const menuRoute = require("./app/routes/menu");
 const authRoute = require("./app/routes/auth");
-const orderRoute = require("./app/routes/order");
-const restaurantRoute = require("./app/routes/restaurant");
-const foodCategoryRoute = require("./app/routes/foodCategory");
-const QRCode = require("./app/routes/qrCode");
-const Banner = require("./app/routes/banner");
-const Tax = require("./app/routes/tax");
+const employee = require("./app/routes/employee");
+const tank = require("./app/routes/tank");
+const machine = require("./app/routes/machine");
+const rate = require("./app/routes/rate");
 
 app.use(
   cors({
@@ -37,16 +34,13 @@ app.get("/", (req, res) => {
   res.send("Welcome to our Restaurant.");
 });
 // Router
-app.use("/menu", menuRoute);
 app.use("/", authRoute);
-app.use("/restaurant", restaurantRoute);
-app.use("/food", foodCategoryRoute);
-app.use("/qr", QRCode);
-app.use("/order", orderRoute);
-app.use('/banner', Banner)
-app.use('/tax', Tax)
+app.use("/employee", employee);
+app.use("/tank", tank);
+app.use("/machine", machine);
+app.use("/rate", rate);
 
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 

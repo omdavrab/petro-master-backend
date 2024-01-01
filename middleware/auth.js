@@ -10,8 +10,8 @@ const verifyToken = (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { email, id, restaurantID, role } = decoded;
-    req.user = { id, email, restaurantID, role };
+    const { email, id } = decoded;
+    req.user = { id, email };
     next();
   } catch (err) {
     return res.status(401).send({ message: "Invalid Token" });

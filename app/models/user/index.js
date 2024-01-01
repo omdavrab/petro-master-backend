@@ -7,12 +7,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please Provide Name"],
   },
-  lastname: {
-    type: String,
-  },
   email: {
     type: String,
-    // unique: true,
+    unique: true,
     required: [true, "Please Provide Email"],
     validate: {
       validator: validator.isEmail,
@@ -26,6 +23,29 @@ const UserSchema = new mongoose.Schema({
   },
   image: {
     type: String,
+  },
+  phone:{
+    type: Number
+  },
+  gstnumber:{
+    type: String,
+    required:[true, "Please Provide GST Number"]
+  },
+  vatnumber :{
+    type : String,
+    required : [true, "Please Provide Vat Number"]
+  },
+  tinnumber : {
+    type: String,
+    required : [true, "Please Provide Tin Number"]
+  },
+  udhyamnumber : {
+    type : String,
+    required : [true, "Please Provide Udhyan Number"]
+  },
+  address : {
+    type : String,
+    required : [true, "please provide Address"]
   },
   isverify: {
     type: Boolean,

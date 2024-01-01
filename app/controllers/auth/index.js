@@ -5,15 +5,18 @@ const User = require("../../models/user");
 const Otp = require("../../models/otp");
 const Restaurant = require("../../models/restaurant");
 
+// Create ADMIN
 const register = async (req, res) => {
   try {
-    const { email, name, password, role } = req.body;
+    const { email } = req.body;
     const otp = Math.floor(1000 + Math.random() * 9000);
 
     const emailAlreadyExists = await User.findOne({ email });
     if (emailAlreadyExists) {
-      return res.status(400).send({ message: "Email already exist" });
+      return res.status(400).send({ message: "Email already exists" });
     }
+
+    // Send OTP via Nodemailer
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
@@ -33,36 +36,41 @@ const register = async (req, res) => {
       if (error) {
         return res.status(400).send({ error, message: "Failed to send OTP" });
       }
-    });
-    const user = await User.create({ name, email, password, role });
-    const token = jwtToken.sign(
-      { email: user.email, id: user._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_LIFTIME,
-      }
-    );
 
-    const loginUser = await User.findOne({ email }).select("-password");
-    const alreadyExist = await Otp.findOneAndUpdate(
-      email,
-      { otp: otp },
-      { new: true }
-    );
-    if (!alreadyExist) {
-      const otpCreate = await Otp.create({
-        otp,
-        userId: loginUser._id,
+      // Save user and OTP details to the database
+      const user = await User.create(req.body);
+      const token = jwtToken.sign(
+        { email: user.email, id: user._id },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: process.env.JWT_LIFTIME,
+        }
+      );
+
+      const loginUser = await User.findOne({ email }).select("-password");
+      const alreadyExist = await Otp.findOneAndUpdate(
         email,
-      });
-    }
-    return res
-      .status(200)
-      .send({ user: user, token: token, message: "Otp Send succefully" });
+        { otp: otp },
+        { new: true }
+      );
+      if (!alreadyExist) {
+        const otpCreate = await Otp.create({
+          otp,
+          userId: loginUser._id,
+          email,
+        });
+      }
+
+      // Send the final response
+      return res
+        .status(200)
+        .send({ user: user, token: token, message: "Otp Sent successfully" });
+    });
   } catch (error) {
-    return res.status(400).send({ message: error });
+    return res.status(400).send({ message: error.message });
   }
 };
+
 // Admin Login
 const login = async (req, res) => {
   try {
@@ -76,7 +84,7 @@ const login = async (req, res) => {
       $and: [{ email: email }, { isverify: true }],
     };
     const user = await User.findOne(query);
-    if (!user) { 
+    if (!user) {
       return res.status(400).send({ message: "Invalid credential" });
     }
     const isPasswordCorrect = await user.comparePassword(password);
@@ -117,23 +125,37 @@ const login = async (req, res) => {
     console.log(error);
   }
 };
-
+// Verify OTP
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(400).send({ message: "Invalid Email" });
+    }
     const loginUser = await Otp.findOne({ email });
     if (loginUser) {
       if (otp === loginUser.otp) {
         // OTP is correct
-        await User.findOneAndUpdate(
-          { email: email },
-          { isverify: true },
-          { new: true, runValidators: true }
+        // await User.findOneAndUpdate(
+        //   { email: email },
+        //   { isverify: true },
+        //   { new: true, runValidators: true }
+        // );
+        user.isverify = true;
+        await user.save();
+        const token = jwtToken.sign(
+          { email: user.email, id: user._id },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: process.env.JWT_LIFTIME,
+          }
         );
         res.status(200).send({
           message: "OTP verify successfully!",
-          loginUser,
+          user: user,
           success: true,
+          token,
         });
         const deleteOtp = await Otp.deleteOne({ email });
       } else {

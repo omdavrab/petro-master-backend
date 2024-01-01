@@ -5,11 +5,18 @@ const upload = multer({
     destination: function (req, file, callback) {
       callback(null, "Images");
     },
-    filename: function (req, file, callback) {
-      callback(
+    // filename: function (req, file, callback) {
+    //   callback(
+    //     null,
+    //     // file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    //     file.originalname
+    //   );
+    // },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(
         null,
-        // file.fieldname + "_" + Date.now() + path.extname(file.originalname)
-        file.originalname
+        file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
       );
     },
   }),

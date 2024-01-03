@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../../models/user");
 const Otp = require("../../models/otp");
 const Restaurant = require("../../models/restaurant");
+const { CustomAPIError } = require("../../../errors");
 
 // Create ADMIN
 const register = async (req, res) => {
@@ -172,13 +173,15 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
     const otp = Math.floor(1000 + Math.random() * 9000);
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).send("User not found please enter valid email id");
+      return next(
+        new CustomAPIError(`User not found please enter valid email id`)
+      );
     }
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -212,7 +215,7 @@ const forgotPassword = async (req, res) => {
         email,
       });
     }
-    return res.status(200).send({ user: user, message: "Otp Send succefully" });
+    return res.status(200).send({ message: "Otp Send succefully" });
   } catch (error) {
     console.log(error);
   }
@@ -240,30 +243,21 @@ const verifyForgotPasswordOtp = async (req, res) => {
   }
 };
 
-const updateForgotPassword = async (req, res) => {
+const updateForgotPassword = async (req, res, next) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const { email, password } = req.body;
     const newPassword = await bcrypt.hash(password, salt);
-    const otpUser = await Otp.findOne({ email });
 
-    if (otpUser) {
-      const updatePassword = await User.findOneAndUpdate(
-        { email: email },
-        { password: newPassword },
-        { new: true }
-      );
-      if (updatePassword) {
-        const deleteOtp = await Otp.deleteOne({ email });
-        return res.status(200).send({ message: "Password has been updated!" });
-      }
-    } else {
-      return res
-        .status(400)
-        .send({ message: "Otp not found please try again" });
-    }
+    const updatePassword = await User.findOneAndUpdate(
+      { email: email },
+      { password: newPassword },
+      { new: true }
+    );
+
+    return res.status(200).send({ message: "Password has been updated!" });
   } catch (error) {
-    console.log(error);
+    return next(error);
   }
 };
 

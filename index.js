@@ -19,6 +19,8 @@ const employee = require("./app/routes/employee");
 const tank = require("./app/routes/tank");
 const machine = require("./app/routes/machine");
 const rate = require("./app/routes/rate");
+const shift = require("./app/routes/shift")
+const bank = require("./app/routes/bank")
 
 app.use(
   cors({
@@ -39,6 +41,8 @@ app.use("/employee", employee);
 app.use("/tank", tank);
 app.use("/machine", machine);
 app.use("/rate", rate);
+app.use("/shift", shift)
+app.use("/bank", bank)
 
 app.use(errorMiddleware);
 app.use(notFoundMiddleware);

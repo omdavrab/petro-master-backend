@@ -1,6 +1,8 @@
 const { CustomAPIError } = require("../../../errors");
 const DailyReport = require("../../models/dailyReport");
 const { StatusCodes } = require("http-status-codes");
+const { ObjectId } = require("mongodb");
+const Machine = require("../../models/machine");
 
 const createCollection = async (req, res, next) => {
   try {
@@ -21,6 +23,7 @@ const createCollection = async (req, res, next) => {
     return next(error);
   }
 };
+
 const GetCollection = async (req, res, next) => {
   try {
     if (!req.user) {
@@ -31,27 +34,34 @@ const GetCollection = async (req, res, next) => {
 
     const machineIds = req.body.id;
 
-    const resultArray = await DailyReport.find({
-      userId: req.user.id,
-      "machine.machineId": { $in: machineIds },
-    })
-      .sort({ createdAt: -1 })
-      .limit(1)
-      .lean();
+    // Initialize an array to store the results
+    const resultArray = [];
 
-    const result = resultArray[0]; // Extract the first element from the array
+    // Iterate through each machine ID
+    for (const machineId of machineIds) {
+      const result = await DailyReport.findOne({
+        userId: req.user.id,
+        "machine.machineId": machineId,
+      })
+        .sort({ createdAt: -1 })
+        .lean();
+
+      // If a result is found, add it to the resultArray
+      if (result) {
+        resultArray.push(result);
+      }
+    }
 
     res.status(StatusCodes.CREATED).json({
       status: StatusCodes.CREATED,
       success: true,
       message: "Collection created successfully",
-      result,
+      data: resultArray,
     });
   } catch (error) {
     return next(error);
   }
 };
-
 
 module.exports = {
   createCollection,

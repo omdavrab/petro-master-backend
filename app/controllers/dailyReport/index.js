@@ -31,12 +31,9 @@ const GetCollection = async (req, res, next) => {
         new CustomAPIError(`RO does not exist with Id: ${req.user.id}`)
       );
     }
-
     const machineIds = req.body.id;
-
     // Initialize an array to store the results
     const resultArray = [];
-
     // Iterate through each machine ID
     for (const machineId of machineIds) {
       const result = await DailyReport.findOne({
@@ -51,7 +48,6 @@ const GetCollection = async (req, res, next) => {
         resultArray.push(result);
       }
     }
-
     res.status(StatusCodes.CREATED).json({
       status: StatusCodes.CREATED,
       success: true,

@@ -1,9 +1,8 @@
-const Rate = require("../../models/rate");
 const { StatusCodes } = require("http-status-codes");
 const { CustomAPIError } = require("../../../errors");
-const Bank = require("../../models/bank");
+const CreditParty = require("../../models/creditParty");
 
-const createBank = async (req, res, next) => {
+const createCreditParty = async (req, res, next) => {
   try {
     if (!req.user) {
       return next(
@@ -11,30 +10,30 @@ const createBank = async (req, res, next) => {
       );
     }
     req.body.userId = req.user.id;
-    await Bank.create(req.body);
+    await CreditParty.create(req.body);
     res.status(StatusCodes.CREATED).json({
       status: StatusCodes.CREATED,
       success: true,
-      message: "Bank created successfully",
+      message: "Created successfully",
     });
   } catch (err) {
     return next(err);
   }
 };
 
-const updateBank = async (req, res, next) => {
+const updateCreditParty = async (req, res, next) => {
   try {
     if (!req.user) {
       return next(
         new CustomAPIError(`RO dose not exist with Id:${req.user.id}`)
       );
     }
-    let tank = await Bank.findById(req.params.id);
+    let tank = await CreditParty.findById(req.params.id);
     if (!tank) {
-      return next(new CustomAPIError("Bank not found", 404));
+      return next(new CustomAPIError("CreditParty not found", 404));
     }
     req.body.userId = req.user.id;
-    tank = await Bank.findByIdAndUpdate(req.params.id, req.body, {
+    tank = await CreditParty.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
       useFindAndModify: false,
@@ -43,32 +42,33 @@ const updateBank = async (req, res, next) => {
       status: StatusCodes.OK,
       success: true,
       data: tank,
+      message: "CreditParty Update successfully",
     });
   } catch (err) {
     return next(err);
   }
 };
 
-const deleteBank = async (req, res, next) => {
+const deleteCreditParty = async (req, res, next) => {
   try {
-    const tank = await Bank.findById(req.params.id);
+    const tank = await CreditParty.findById(req.params.id);
     if (!tank) {
       return next(
-        new CustomAPIError(`Bank dose not exist with Id:${req.params.id}`)
+        new CustomAPIError(`CreditParty dose not exist with Id:${req.params.id}`)
       );
     }
-    await Bank.findByIdAndDelete({ _id: tank._id });
+    await CreditParty.findByIdAndDelete({ _id: tank._id });
     res.status(StatusCodes.OK).json({
       status: StatusCodes.OK,
       success: true,
-      message: "Bank Deleted successfully",
+      message: "CreditParty Deleted successfully",
     });
   } catch (err) {
     return next(err);
   }
 };
 
-const getAllBank = async (req, res, next) => {
+const getAllCreditParty = async (req, res, next) => {
   try {
     let page = req.query.page;
     let startIndex = 0;
@@ -88,7 +88,7 @@ const getAllBank = async (req, res, next) => {
     const query = {
       userId: req.user.id,
     };
-    const result = await Bank.find(query).sort("-_id");
+    const result = await CreditParty.find(query).sort("-_id");
 
     res.status(StatusCodes.OK).send({
       data: page === "all" ? result : result.slice(startIndex, endIndex),
@@ -104,8 +104,8 @@ const getAllBank = async (req, res, next) => {
 };
 
 module.exports = {
-  createBank,
-  updateBank,
-  deleteBank,
-  getAllBank,
+  createCreditParty,
+  updateCreditParty,
+  deleteCreditParty,
+  getAllCreditParty,
 };

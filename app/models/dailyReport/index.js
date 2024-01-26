@@ -21,22 +21,79 @@ const MachineSchema = new mongoose.Schema({
   },
   testing: {
     type: Number,
-    // required: true,
+    required: true,
   },
   totalSale: {
     type: Number,
-    // required: true,
+    required: true,
   },
   rate: {
     type: Number,
-    // required: true,
+    required: true,
   },
   amount: {
     type: Number,
-    // required: true,
+    required: true,
   },
 });
-
+const CreditSale = new mongoose.Schema({
+  partyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Machine",
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  product: {
+    type: String,
+    required: true,
+  },
+  qty: {
+    type: Number,
+    required: true,
+  },
+  vname: {
+    type: String,
+    required: true,
+  },
+  vnumber: {
+    type: String,
+    required: true,
+  },
+  rate: {
+    type: Number,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+});
+const ProductSale = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product",
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  qty: {
+    type: Number,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+});
 const AttendanceSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Types.ObjectId,
@@ -48,13 +105,19 @@ const AttendanceSchema = new mongoose.Schema({
     ref: "Shift",
     required: [true, "Please provide Shift ID,"],
   },
+  shiftName: {
+    type: String,
+    required: [true, "Please provide Shift Name,"]
+  },
   employeeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Employee",
     required: [true, "Please provide Employee ID,"],
   },
-  date: { type: Date},
+  date: { type: Date },
   machine: [MachineSchema],
+  productSale : [ProductSale],
+  creditSale : [CreditSale],
   createdAt: {
     type: Date,
     default: Date.now,

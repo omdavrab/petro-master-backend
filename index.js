@@ -22,6 +22,8 @@ const rate = require("./app/routes/rate");
 const shift = require("./app/routes/shift");
 const bank = require("./app/routes/bank");
 const report = require("./app/routes/dailyReport");
+const creditParty = require('./app/routes/creditParty')
+const product = require('./app/routes/product')
 
 app.use(
   cors({
@@ -45,6 +47,8 @@ app.use("/rate", rate);
 app.use("/shift", shift);
 app.use("/bank", bank);
 app.use("/report", report)
+app.use("/party", creditParty)
+app.use("/product", product)
 
 app.use(errorMiddleware);
 app.use(notFoundMiddleware);

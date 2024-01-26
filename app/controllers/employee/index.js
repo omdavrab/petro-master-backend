@@ -133,11 +133,16 @@ const getEmployee = async (req, res, next) => {
 
 const getAllEmployeesByUserId = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page ? req.query.page : 1);
-    const pageLimit = parseInt(req.query.pageLimit ? req.query.pageLimit : 10);
-    // const limit = 10;
-    const startIndex = (page - 1) * pageLimit;
-    const endIndex = page * pageLimit;
+    let page = req.query.page;
+    let startIndex = 0;
+    let endIndex = 1;
+    let pageLimit = 8;
+    if (page !== "all") {
+      page = parseInt(req.query.page ? req.query.page : 1);
+      pageLimit = parseInt(req.query.pageLimit ? req.query.pageLimit : 10);
+      startIndex = (page - 1) * pageLimit;
+      endIndex = page * pageLimit;
+    }
 
     if (!req.user) {
       return next(
@@ -150,14 +155,13 @@ const getAllEmployeesByUserId = async (req, res, next) => {
     const result = await Employee.find(query).sort("-_id");
 
     res.status(StatusCodes.OK).send({
-        data: result.slice(startIndex, endIndex),
-        current: page,
-        total: Math.ceil(result.length / pageLimit),
-        results: result.length,
-        startIndex: startIndex,
-        endIndex: endIndex,
-      });
-      
+      data: page === "all" ? result : result.slice(startIndex, endIndex),
+      current: page,
+      total: Math.ceil(result.length / pageLimit),
+      results: result.length,
+      startIndex: startIndex,
+      endIndex: endIndex,
+    });
   } catch (error) {
     return next(new CustomAPIError("Error retrieving employees for the user"));
   }

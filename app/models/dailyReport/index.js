@@ -11,6 +11,10 @@ const MachineSchema = new mongoose.Schema({
     ref: "Machine",
     required: true,
   },
+  nozzle:{
+    type: String,
+    required: true,
+  },
   opening: {
     type: Number,
     required: true,
@@ -21,7 +25,6 @@ const MachineSchema = new mongoose.Schema({
   },
   testing: {
     type: Number,
-    required: true,
   },
   totalSale: {
     type: Number,
@@ -70,6 +73,10 @@ const CreditSale = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  chno: {
+    type: String,
+    required: true,
+  },
 });
 const ProductSale = new mongoose.Schema({
   productId: {
@@ -103,21 +110,45 @@ const AttendanceSchema = new mongoose.Schema({
   shiftId: {
     type: mongoose.Types.ObjectId,
     ref: "Shift",
-    required: [true, "Please provide Shift ID,"],
+    required: [true, "Please provide Shift,"],
   },
   shiftName: {
     type: String,
-    required: [true, "Please provide Shift Name,"]
+    required: [true, "Please provide Shift Name,"],
   },
   employeeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Employee",
-    required: [true, "Please provide Employee ID,"],
+    required: [true, "Please provide Employee,"],
   },
   date: { type: Date },
   machine: [MachineSchema],
-  productSale : [ProductSale],
-  creditSale : [CreditSale],
+  productSale: [ProductSale],
+  creditSale: [CreditSale],
+  totalCollection: {
+    type: Number,
+    require: true,
+  },
+  totalcash: {
+    type: Number,
+    require: true,
+  },
+  totalCreditSale: {
+    type: Number,
+    require: true,
+  },
+  totalOnlinePayment: {
+    type: Number,
+    require: true,
+  },
+  totalProductSale: {
+    type: Number,
+    require: true,
+  },
+  totalDifferent: {
+    type: Number,
+    require: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

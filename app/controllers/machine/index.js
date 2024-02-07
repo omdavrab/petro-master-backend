@@ -11,7 +11,7 @@ const createMachine = async (req, res, next) => {
       );
     }
     req.body.userId = req.user.id;
-    await Machine.create(req.body);
+    await Machine.insertMany(req.body);
     res.status(StatusCodes.CREATED).json({
       status: StatusCodes.CREATED,
       success: true,

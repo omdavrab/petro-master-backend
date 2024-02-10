@@ -11,7 +11,7 @@ const MachineSchema = new mongoose.Schema({
     ref: "Machine",
     required: true,
   },
-  nozzle:{
+  nozzle: {
     type: String,
     required: true,
   },
@@ -130,6 +130,14 @@ const AttendanceSchema = new mongoose.Schema({
     require: true,
   },
   totalcash: {
+    type: Number,
+    require: true,
+  },
+  cash: {
+    type: Number,
+    require: true,
+  },
+  coine: {
     type: Number,
     require: true,
   },

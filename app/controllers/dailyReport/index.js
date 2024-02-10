@@ -113,6 +113,8 @@ const GetReport = async (req, res, next) => {
         date: entry.date,
         totalCollection: entry.totalCollection,
         totalcash: entry.totalcash,
+        cash: entry.cash,
+        coine: entry.coine,
         totalCreditSale: entry.totalCreditSale,
         totalOnlinePayment: entry.totalOnlinePayment,
         totalProductSale: entry.totalProductSale,

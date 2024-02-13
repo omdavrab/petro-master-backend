@@ -24,6 +24,7 @@ const bank = require("./app/routes/bank");
 const report = require("./app/routes/dailyReport");
 const creditParty = require('./app/routes/creditParty')
 const product = require('./app/routes/product')
+const upi = require('./app/routes/upi')
 
 app.use(
   cors({
@@ -49,6 +50,7 @@ app.use("/bank", bank);
 app.use("/report", report)
 app.use("/party", creditParty)
 app.use("/product", product)
+app.use("/upi", upi)
 
 app.use(errorMiddleware);
 app.use(notFoundMiddleware);
